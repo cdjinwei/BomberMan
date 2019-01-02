@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "10539806-b0e8-41c6-8324-b573b1a39e61",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "BomberMan_01": {
+      "ver": "1.0.3",
+      "uuid": "be2b1662-58ef-4f0d-9d75-2842134b72af",
+      "rawTextureUuid": "10539806-b0e8-41c6-8324-b573b1a39e61",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": 0,
+      "trimX": 2,
+      "trimY": 0,
+      "width": 11,
+      "height": 16,
+      "rawWidth": 16,
+      "rawHeight": 16,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
