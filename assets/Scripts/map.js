@@ -15,6 +15,7 @@ cc.Class({
         cameraNode: cc.Node,
         roleSpriteFrame: cc.SpriteFrame,
         bombEffectAtlas: cc.SpriteAtlas,
+        enemy: cc.Node
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -26,20 +27,21 @@ cc.Class({
         this._tile_map = this.node.getComponent(cc.TiledMap);
         this._floor_layer = this._tile_map.getLayer('floor');
         this._block_layer = this._tile_map.getLayer('block');
-        // let tile = this._floor.getTiledTileAt(2, 2, true);
-        // console.log(tile.node.position);
-        // console.log(this._floor.getPositionAt(2,2));
-        // tile.node.position = this._floor.getPositionAt(2,2);
-        // tile.node.scale = 0.5;
-        // let initial_pos = cc.v2(1, 1);
-        // this.role.position = this._floor_layer.getPositionAt(initial_pos);
-        // this.role._tile_pos = cc.v2(initial_pos);
-        console.log(this._tile_map.getMapSize());
         this._role_list = [];
         this.registerEvent();
 
         this.AddRole({ isSelf: true }, cc.v2(1, 1));
-        // this.AddBombEffect(cc.v2(5, 5), 3);
+        this.enemy.getComponent('AiController').InitAi(
+            {
+                aiLevel: 1,
+                position: new cc.Vec2(3,3)
+            },
+            {
+                wall_layer: null,
+                block_layer: this._block_layer,
+                floor_layer: this._floor_layer
+            }
+        );
     },
 
     onDestroy() {

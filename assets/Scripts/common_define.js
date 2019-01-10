@@ -10,6 +10,15 @@ window.BoomEffectType = {
     HOR_RIGHT_2: 'hor_3_'
 }
 
+window.DirectionType = {
+    UP: 0,
+    DOWN: 1,
+    LEFT: 2,
+    RIGHT: 3
+}
+
+window.DirectionList = [0,1,2,3];
+
 //世界上只有两种人
 //
 function a(){
