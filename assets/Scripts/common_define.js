@@ -9,3 +9,14 @@ window.BoomEffectType = {
     HOR_RIGHT_1: 'hor_4_',
     HOR_RIGHT_2: 'hor_3_'
 }
+
+//世界上只有两种人
+//
+function a(){
+
+}
+
+function a()
+{
+
+}

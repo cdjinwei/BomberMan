@@ -39,7 +39,7 @@ cc.Class({
         this.registerEvent();
 
         this.AddRole({ isSelf: true }, cc.v2(1, 1));
-        this.AddBombEffect(cc.v2(5, 5), 3);
+        // this.AddBombEffect(cc.v2(5, 5), 3);
     },
 
     onDestroy() {
