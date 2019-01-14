@@ -65,11 +65,11 @@ cc.Class({
         let next_position = this.node._tile_pos.clone();
         let next_direction = this.GetNextDirection();
         this.GetNextPosition(next_direction, next_position);
-        if(this.CanMove(next_position)){
+        if (this.CanMove(next_position)) {
             this._cur_direction = next_direction;
             this._blocked_direction = [];
             this.SetRolePosition(next_position);
-        }else{
+        } else {
             this._blocked_direction.push(next_direction);
         }
     },
@@ -77,23 +77,26 @@ cc.Class({
     /**
      * 获取AI的下一个移动方向
      */
-    GetNextDirection(){
+    GetNextDirection() {
         let next_dir;
-        if(this._blocked_direction.length == 4){
+        if (this._blocked_direction.length == 4) {
             //role被四面围堵
-            next_dir = window.DirectionList[(Math.floor(Math.random()*10)) % 4];
-        }else if(this._blocked_direction.indexOf(this._cur_direction)){
+            next_dir = window.DirectionList[(Math.floor(Math.random() * 10)) % 4];
+        } else if (this._blocked_direction.indexOf(this._cur_direction)) {
             //role移动方向没有被堵
             next_dir = this._cur_direction;
-        }else{
-            //role移动方向被堵
-            let valid_direction = [];
-            for(let i = 0; i < window.DirectionList.length; i++){
-                if(this._blocked_direction.indexOf(window.DirectionList[i]) == -1){
-                    valid_direction.push(window.DirectionList[i]);
-                }
+            if (this._blocked_direction.length <= 2 && Math.random() > 0.8) {
+                //有两个以上的方向可以选择
+                let valid_direction = this.GetValidDirection(this._blocked_direction);
+                let random = Math.floor(Math.random() * 10 % valid_direction.length);
+                next_dir = valid_direction[random];
+                console.log(this._blocked_direction);
+                console.log(`next_dir:${next_dir}`);
             }
-            let random = Math.floor(Math.random()*10);
+        } else {
+            //role移动方向被堵
+            let valid_direction = this.GetValidDirection(this._blocked_direction);
+            let random = Math.floor(Math.random() * 10);
             let nex = random % valid_direction.length;
             next_dir = valid_direction[nex];
         }
@@ -101,13 +104,26 @@ cc.Class({
     },
 
     /**
+     * 获取可以移动的方向
+     * @param {Array} blockedDirections 
+     */
+    GetValidDirection(blockedDirections) {
+        let valid_direction = [];
+        for (let i = 0; i < window.DirectionList.length; i++) {
+            if (blockedDirections.indexOf(window.DirectionList[i]) == -1) {
+                valid_direction.push(window.DirectionList[i]);
+            }
+        }
+        return valid_direction;
+    },
+    /**
      * 获取AI的
      */
-    GetNextPosition(next_direction, next_position){
+    GetNextPosition(next_direction, next_position) {
         switch (next_direction) {
             case DirectionType.UP:
-                next_position.y -= 1;    
-            break;
+                next_position.y -= 1;
+                break;
             case DirectionType.DOWN:
                 next_position.y += 1;
                 break;
@@ -146,8 +162,8 @@ cc.Class({
      * 是否能移动到这个位置
      * @param {cc.Vec2} position 
      */
-    CanMove(position){
-        if(!this.HaveBlock(position)){
+    CanMove(position) {
+        if (!this.HaveBlock(position)) {
             return true;
         }
         return false;
