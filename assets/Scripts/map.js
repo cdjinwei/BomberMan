@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
+import BombEffect from "../Scripts/BombEffect";
 
 cc.Class({
     extends: cc.Component,
@@ -28,6 +29,8 @@ cc.Class({
         this._floor_layer = this._tile_map.getLayer('floor');
         this._block_layer = this._tile_map.getLayer('block');
         this._role_list = [];
+        //有火焰的地图块
+        this._fire_pos = [];
         this.registerEvent();
 
         this.AddRole({ isSelf: true }, cc.v2(1, 1));
@@ -131,17 +134,22 @@ cc.Class({
 
     AddBombEffect(pos, lvl) {
         let pos_map = this.BombAreaFilter(pos, lvl);
-        console.log(pos_map);
-        let fireGroup = [];
-        for (let info of pos_map) {
-            let fire = this.CreateFire(info)
-            fireGroup.push(fire);
-        }
-        let bombIndex = 0;
-        this.schedule(() => {
-            bombIndex++;
-            this.UpdateBombEffect(fireGroup, bombIndex);
-        }, 0.1, 4);
+
+        let node = new cc.Node();
+        let cmp = node.addComponent(BombEffect);
+        cmp.InitView(pos_map, lvl, this.bombEffectAtlas);
+        node.parent = this.node;
+        // console.log(pos_map);
+        // let fireGroup = [];
+        // for (let info of pos_map) {
+        //     let fire = this.CreateFire(info)
+        //     fireGroup.push(fire);
+        // }
+        // let bombIndex = 0;
+        // this.schedule(() => {
+        //     bombIndex++;
+        //     this.UpdateBombEffect(fireGroup, bombIndex);
+        // }, 0.1, 4);
     },
 
     UpdateBombEffect(fireGroup, index) {
@@ -154,7 +162,11 @@ cc.Class({
         let pos_map = [];
         let map_size = this._tile_map.getMapSize();
         let direction = [1, -1];
-        pos_map.push({ position: pos, type: BoomEffectType.CENTER });
+        pos_map.push({ 
+            position: pos, 
+            type: BoomEffectType.CENTER, 
+            pixPos: this._floor_layer.getPositionAt(pos) 
+        });
         for (let dir of direction) {
             let left_count = lvl;
             let start_pos = cc.v2(pos.x, pos.y);
@@ -175,12 +187,14 @@ cc.Class({
                         //末端的火焰
                         pos_map.push({
                             position: cc.v2(start_pos.x, start_pos.y),
-                            type: dir == 1 ? BoomEffectType.HOR_RIGHT_1 : BoomEffectType.HOR_LEFT_1
+                            type: dir == 1 ? BoomEffectType.HOR_RIGHT_1 : BoomEffectType.HOR_LEFT_1,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y)) 
                         });
                     } else {
                         pos_map.push({
                             position: cc.v2(start_pos.x, start_pos.y),
-                            type: dir == 1 ? BoomEffectType.HOR_RIGHT_2 : BoomEffectType.HOR_LEFT_2
+                            type: dir == 1 ? BoomEffectType.HOR_RIGHT_2 : BoomEffectType.HOR_LEFT_2,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
                         });
                     }
                 }
@@ -207,12 +221,14 @@ cc.Class({
                         //末端的火焰
                         pos_map.push({
                             position: cc.v2(start_pos.x, start_pos.y),
-                            type: dir == 1 ? BoomEffectType.VER_BOTTOM_1 : BoomEffectType.VER_TOP_1
+                            type: dir == 1 ? BoomEffectType.VER_BOTTOM_1 : BoomEffectType.VER_TOP_1,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
                         });
                     } else {
                         pos_map.push({
                             position: cc.v2(start_pos.x, start_pos.y),
-                            type: dir == 1 ? BoomEffectType.VER_TOP_2 : BoomEffectType.VER_BOTTOM_2
+                            type: dir == 1 ? BoomEffectType.VER_TOP_2 : BoomEffectType.VER_BOTTOM_2,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
                         });
                     }
                 }

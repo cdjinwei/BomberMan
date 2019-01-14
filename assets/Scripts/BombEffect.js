@@ -37,9 +37,40 @@ cc.Class({
 
     },
 
-    initView(position, level){
-        //count >= 1;
-        
+    InitView(posMap, level, spriteSheet){
+        this._sprite_sheet = spriteSheet;
+        this._tick = 4;
+        this._fires = [];
+        for(let info of posMap){
+            this._fires.push(this.CreateFire(info));
+        }
+
+        let _index = 0;
+        this.schedule(() => {
+            this.UpdateFire(++_index);
+        }, 0.1, 4);
+    },
+
+    CreateFire(info){
+        let node = new cc.Node();
+        node.addComponent(cc.Sprite).spriteFrame = this._sprite_sheet.getSpriteFrame(`${info.type}1`);
+        node._fire_type = info.type;
+        node.anchorX = 0;
+        node.anchorY = 0;
+        node.parent = this.node;
+        node.position = info.pixPos;//this._floor_layer.getPositionAt(info.position);
+        return node;
+    },
+
+    UpdateFire(index){
+        for( let fire of this._fires){
+            if(index > 4){
+                fire.destroy();
+                //notify clean fire position
+            }else{
+                fire.getComponent(cc.Sprite).spriteFrame = this._sprite_sheet.getSpriteFrame(`${fire._fire_type}${index}`);
+            }
+        }
     }
     // update (dt) {},
 });
