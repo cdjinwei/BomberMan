@@ -90,8 +90,6 @@ cc.Class({
                 let valid_direction = this.GetValidDirection(this._blocked_direction);
                 let random = Math.floor(Math.random() * 10 % valid_direction.length);
                 next_dir = valid_direction[random];
-                console.log(this._blocked_direction);
-                console.log(`next_dir:${next_dir}`);
             }
         } else {
             //role移动方向被堵

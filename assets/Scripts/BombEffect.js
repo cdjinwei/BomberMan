@@ -34,16 +34,28 @@ cc.Class({
     // onLoad () {},
 
     start () {
+        this._event_handler = this.HandleEvent.bind(this);
+        window.EventMgr.register_event(this._event_handler);
+    },
 
+    HandleEvent(ev){
+        switch(ev){
+
+        }
     },
 
     InitView(posMap, level, spriteSheet){
         this._sprite_sheet = spriteSheet;
+        this._level = level;
         this._tick = 4;
         this._fires = [];
+        this._fire_pos = [];
         for(let info of posMap){
             this._fires.push(this.CreateFire(info));
+            this._fire_pos.push(info.position);
         }
+        let ev = new AddFire(this._fire_pos);
+        window.EventMgr.fire_event(ev);
 
         let _index = 0;
         this.schedule(() => {
@@ -58,7 +70,7 @@ cc.Class({
         node.anchorX = 0;
         node.anchorY = 0;
         node.parent = this.node;
-        node.position = info.pixPos;//this._floor_layer.getPositionAt(info.position);
+        node.position = info.pixPos;
         return node;
     },
 
@@ -66,6 +78,11 @@ cc.Class({
         for( let fire of this._fires){
             if(index > 4){
                 fire.destroy();
+                if(!this._notifyed){
+                    this._notifyed = true;
+                    let ev = new ClearFire(this._fire_pos);
+                    window.EventMgr.fire_event(ev);
+                }
                 //notify clean fire position
             }else{
                 fire.getComponent(cc.Sprite).spriteFrame = this._sprite_sheet.getSpriteFrame(`${fire._fire_type}${index}`);

@@ -44,7 +44,7 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
+      "x": 0,
       "y": 0
     },
     "_position": {
@@ -118,7 +118,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "7626908b-3bd5-495b-9638-69ae37b821ef"
     },
     "fileId": "daXL6YJ4JFH51tkijjQnHU",
     "sync": false

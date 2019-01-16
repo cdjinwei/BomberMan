@@ -16,7 +16,7 @@ cc.Class({
         cameraNode: cc.Node,
         roleSpriteFrame: cc.SpriteFrame,
         bombEffectAtlas: cc.SpriteAtlas,
-        enemy: cc.Node
+        enemy: cc.Prefab
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -29,22 +29,27 @@ cc.Class({
         this._floor_layer = this._tile_map.getLayer('floor');
         this._block_layer = this._tile_map.getLayer('block');
         this._role_list = [];
-        //有火焰的地图块
-        this._fire_pos = [];
         this.registerEvent();
-
-        this.AddRole({ isSelf: true }, cc.v2(1, 1));
-        this.enemy.getComponent('AiController').InitAi(
-            {
-                aiLevel: 1,
-                position: new cc.Vec2(3,3)
-            },
-            {
-                wall_layer: null,
-                block_layer: this._block_layer,
-                floor_layer: this._floor_layer
-            }
+        this.InitialFireMap();
+        this.AddRole(
+            { isSelf: true },
+            cc.v2(1, 1),
+            RoleType.PLAYER
         );
+        for (let i = 0; i < 20; i++) {
+            this.AddRole(
+                {
+                    aiLevel: 1,
+                    position: new cc.Vec2(3, 3)
+                },
+                {
+                    wall_layer: null,
+                    block_layer: this._block_layer,
+                    floor_layer: this._floor_layer
+                },
+                RoleType.ENEMY
+            );
+        }
     },
 
     onDestroy() {
@@ -53,10 +58,43 @@ cc.Class({
 
     registerEvent() {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.OnKeyUp, this);
+
+        this._event_handler = this.HandleEvent.bind(this);
+        window.EventMgr.register_event(this._event_handler);
     },
 
     unregisterEvent() {
+        window.EventMgr.unregister_event(this._event_handler);
+    },
 
+    InitialFireMap() {
+        //有火焰的地图块
+        let mapSize = this._tile_map.getMapSize();
+        this._fire_map = [];
+        for (let i = 0; i < mapSize.width; i++) {
+            this._fire_map[i] = new Array(mapSize.height).fill(0);
+        }
+    },
+
+    UpdateFireCount(posMap, decorate) {
+        for (let pos of posMap) {
+            this._fire_map[pos.x][pos.y] += 1 * decorate;
+        }
+    },
+
+    HandleEvent(ev) {
+        switch (ev.event_type) {
+            case EventType.EVENT_CLEAR_FIRE:
+                this.UpdateFireCount(ev.pos_map, -1);
+                break;
+            case EventType.EVENT_ADD_FIRE:
+                this.UpdateFireCount(ev.pos_map, 1);
+                break;
+                
+            default:
+                break;
+        }
+        console.log(this._fire_map.concat());
     },
 
     OnKeyUp(event) {
@@ -98,7 +136,20 @@ cc.Class({
         }
     },
 
-    AddRole(info, position) {
+    AddRole(param1, param2, type) {
+        switch (type) {
+            case RoleType.PLAYER:
+                this.AddPlayer(param1, param2);
+                break;
+            case RoleType.ENEMY:
+                this.AddEnemy(param1, param2);
+                break;
+            default:
+                break;
+        }
+    },
+
+    AddPlayer(info, position) {
         let node = new cc.Node();
         node.addComponent(cc.Sprite).spriteFrame = this.roleSpriteFrame;
         node.parent = this.node;
@@ -113,59 +164,29 @@ cc.Class({
         }
     },
 
-    CreateFire(info) {
-        let node = new cc.Node();
-        node.addComponent(cc.Sprite).spriteFrame = this.bombEffectAtlas.getSpriteFrame(`${info.type}1`);
-        node._fire_type = info.type;
-        node.anchorX = 0;
-        node.anchorY = 0;
+    AddEnemy(roleInfo, mapInfo) {
+        let node = cc.instantiate(this.enemy);
         node.parent = this.node;
-        node.position = this._floor_layer.getPositionAt(info.position);
-        return node;
-    },
-
-    UpdateFire(node, lvl) {
-        if (lvl > 4) {
-            node.destroy();
-        } else {
-            node.getComponent(cc.Sprite).spriteFrame = this.bombEffectAtlas.getSpriteFrame(`${node._fire_type}${lvl}`);
-        }
+        this._role_list.push(node);
+        node.getComponent('AiController').InitAi(roleInfo, mapInfo);
     },
 
     AddBombEffect(pos, lvl) {
         let pos_map = this.BombAreaFilter(pos, lvl);
-
         let node = new cc.Node();
         let cmp = node.addComponent(BombEffect);
         cmp.InitView(pos_map, lvl, this.bombEffectAtlas);
         node.parent = this.node;
-        // console.log(pos_map);
-        // let fireGroup = [];
-        // for (let info of pos_map) {
-        //     let fire = this.CreateFire(info)
-        //     fireGroup.push(fire);
-        // }
-        // let bombIndex = 0;
-        // this.schedule(() => {
-        //     bombIndex++;
-        //     this.UpdateBombEffect(fireGroup, bombIndex);
-        // }, 0.1, 4);
-    },
-
-    UpdateBombEffect(fireGroup, index) {
-        for (let fire of fireGroup) {
-            this.UpdateFire(fire, index);
-        }
     },
 
     BombAreaFilter(pos, lvl) {
         let pos_map = [];
         let map_size = this._tile_map.getMapSize();
         let direction = [1, -1];
-        pos_map.push({ 
-            position: pos, 
-            type: BoomEffectType.CENTER, 
-            pixPos: this._floor_layer.getPositionAt(pos) 
+        pos_map.push({
+            position: pos,
+            type: BoomEffectType.CENTER,
+            pixPos: this._floor_layer.getPositionAt(pos)
         });
         for (let dir of direction) {
             let left_count = lvl;
@@ -188,7 +209,7 @@ cc.Class({
                         pos_map.push({
                             position: cc.v2(start_pos.x, start_pos.y),
                             type: dir == 1 ? BoomEffectType.HOR_RIGHT_1 : BoomEffectType.HOR_LEFT_1,
-                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y)) 
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
                         });
                     } else {
                         pos_map.push({

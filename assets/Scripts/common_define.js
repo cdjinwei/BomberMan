@@ -19,13 +19,22 @@ window.DirectionType = {
 
 window.DirectionList = [0,1,2,3];
 
-//世界上只有两种人
-//
-function a(){
-
+window.RoleType = {
+    PLAYER: 0,
+    ENEMY: 1
 }
 
-function a()
-{
+window.EventType = {
+    EVENT_CLEAR_FIRE: 0,
+    EVENT_ADD_FIRE: 1
+}
 
+window.ClearFire = function(pos_map){
+    this.event_type = EventType.EVENT_CLEAR_FIRE;
+    this.pos_map = pos_map;
+}
+
+window.AddFire = function(pos_map){
+    this.event_type = EventType.EVENT_ADD_FIRE;
+    this.pos_map = pos_map;
 }
