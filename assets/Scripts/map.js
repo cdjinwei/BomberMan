@@ -30,6 +30,7 @@ cc.Class({
         this._block_layer = this._tile_map.getLayer('block');
         this._role_list = [];
         this.registerEvent();
+        this.InitStoneWall();
         this.InitialFireMap();
         this.AddRole(
             { isSelf: true },
@@ -45,7 +46,8 @@ cc.Class({
                 {
                     wall_layer: null,
                     block_layer: this._block_layer,
-                    floor_layer: this._floor_layer
+                    floor_layer: this._floor_layer,
+                    fire_map: this._fire_map
                 },
                 RoleType.ENEMY
             );
@@ -65,6 +67,16 @@ cc.Class({
 
     unregisterEvent() {
         window.EventMgr.unregister_event(this._event_handler);
+    },
+
+    InitStoneWall(){
+        this._stone_map = [];
+        let mapSize = this._tile_map.getMapSize();
+        for(let x = 0; x < mapSize.width; x++){
+            for(let y = 0; y < mapSize.width; y++){
+                
+            }   
+        }
     },
 
     InitialFireMap() {
@@ -94,7 +106,6 @@ cc.Class({
             default:
                 break;
         }
-        console.log(this._fire_map.concat());
     },
 
     OnKeyUp(event) {
@@ -156,7 +167,8 @@ cc.Class({
         node.position = this._floor_layer.getPositionAt(position);
         node.anchorX = 0;
         node.anchorY = 0;
-        this._role_list.push(node);
+        node.color = cc.Color.RED;
+        // this._role_list.push(node);
         if (info.isSelf) {
             this.role = node;
             this.role._tile_pos = position;
@@ -167,7 +179,7 @@ cc.Class({
     AddEnemy(roleInfo, mapInfo) {
         let node = cc.instantiate(this.enemy);
         node.parent = this.node;
-        this._role_list.push(node);
+        // this._role_list.push(node);
         node.getComponent('AiController').InitAi(roleInfo, mapInfo);
     },
 

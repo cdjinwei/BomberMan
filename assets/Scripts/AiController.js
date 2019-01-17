@@ -34,7 +34,8 @@ cc.Class({
     // onLoad () {},
 
     start() {
-        // this.InitAi();
+        this._check_delta = 0.1;
+        this._delta = 0;
     },
 
     /**
@@ -45,11 +46,13 @@ cc.Class({
      */
     InitAi(roleInfo, mapInfo) {
         //当前位置被堵住的方向
+        this._is_alive = true;
         this._blocked_direction = [];
         this._ai_level = roleInfo.aiLevel;
         this._wall_layer = mapInfo.wall_layer;
         this._block_layer = mapInfo.block_layer;
         this._floor_layer = mapInfo.floor_layer;
+        this._fire_map = mapInfo.fire_map;
         //初始默认朝右边移动
         this._cur_direction = DirectionType.RIGHT;
         //设置起始位置
@@ -58,10 +61,24 @@ cc.Class({
         this.UpdateAiAction();
     },
 
+    CheckAlive(){
+        if(this._fire_map[this.node._tile_pos.x][this.node._tile_pos.y] > 0){
+            this._is_alive = false;
+            this.unschedule(this.UpdateAiAction);
+            this.node.runAction(cc.sequence(
+                cc.blink(1, 4),
+                cc.callFunc(()=>{
+                    this.node.destroy();
+                })
+            ));
+        }
+    },
+
     /**
      * AI行动
      */
     UpdateAiAction() {
+        if(!this._is_alive) return;
         let next_position = this.node._tile_pos.clone();
         let next_direction = this.GetNextDirection();
         this.GetNextPosition(next_direction, next_position);
@@ -82,7 +99,7 @@ cc.Class({
         if (this._blocked_direction.length == 4) {
             //role被四面围堵
             next_dir = window.DirectionList[(Math.floor(Math.random() * 10)) % 4];
-        } else if (this._blocked_direction.indexOf(this._cur_direction)) {
+        } else if (this._blocked_direction.indexOf(this._cur_direction) == -1) {
             //role移动方向没有被堵
             next_dir = this._cur_direction;
             if (this._blocked_direction.length <= 2 && Math.random() > 0.8) {
@@ -165,6 +182,12 @@ cc.Class({
             return true;
         }
         return false;
-    }
-    // update (dt) {},
+    },
+
+    update (dt) {
+        this._delta += dt;
+        if(this._is_alive && this._delta >= this._check_delta){
+            this.CheckAlive();
+        }
+    },
 });
