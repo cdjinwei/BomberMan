@@ -16,6 +16,7 @@ cc.Class({
         cameraNode: cc.Node,
         roleSpriteFrame: cc.SpriteFrame,
         bombEffectAtlas: cc.SpriteAtlas,
+        gameElementAtlas: cc.SpriteAtlas,
         enemy: cc.Prefab
     },
 
@@ -30,7 +31,10 @@ cc.Class({
         this._block_layer = this._tile_map.getLayer('block');
         this._role_list = [];
         this.registerEvent();
-        this.InitStoneWall();
+        setTimeout(()=>{
+            this.InitStoneWall();
+        }, 1000)
+        
         this.InitialFireMap();
         this.AddRole(
             { isSelf: true },
@@ -72,10 +76,22 @@ cc.Class({
     InitStoneWall(){
         this._stone_map = [];
         let mapSize = this._tile_map.getMapSize();
-        for(let x = 0; x < mapSize.width; x++){
-            for(let y = 0; y < mapSize.width; y++){
-                
-            }   
+        for(let y = 0; y < mapSize.height; y++){
+            this._stone_map[y] = [];
+            for(let x = 0; x < mapSize.width; x++){
+                if(!this.HaveBlock(new cc.Vec2(x, y)) && Math.random() > 0.5){
+                    let wall = new cc.Node();
+                    wall.addComponent(cc.Sprite).spriteFrame = this.gameElementAtlas.getSpriteFrame('wall');
+                    wall.parent = this.node;
+                    wall.anchorX = 0;
+                    wall.anchorY = 0;
+                    wall._tile_pos = new cc.Vec2(x, y);
+                    wall.position = this._floor_layer.getPositionAt(wall._tile_pos);
+                    this._stone_map[y][x] = wall;
+                }else{
+                    this._stone_map[y][x] = undefined;
+                }
+            }
         }
     },
 
@@ -271,6 +287,7 @@ cc.Class({
     },
 
     HaveBlock(pos) {
+        console.log(pos);
         if (this._block_layer.getTileGIDAt(pos)) {
             return true;
         }
@@ -278,7 +295,6 @@ cc.Class({
     },
 
     TryMove(pos) {
-        console.log();
         if (this.HaveBlock(pos)) {
             console.log(`(${pos.x},${pos.y})处有障碍物`);
         } else {

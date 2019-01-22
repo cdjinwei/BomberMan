@@ -441,7 +441,7 @@
     "_skewY": 0,
     "_zIndex": 0,
     "groupIndex": 0,
-    "_id": "c7cSf7JCZJz5OJtn3Z22eF"
+    "_id": "1fSp8XPSxKyoeNFbSHMwK4"
   },
   {
     "__type__": "cc.TiledLayer",
@@ -453,7 +453,7 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_id": "40LRtuMvxEWosS+7YdQHQW"
+    "_id": "34kE8JYiJO+44wlJjhvaka"
   },
   {
     "__type__": "cc.Node",
@@ -514,7 +514,7 @@
     "_skewY": 0,
     "_zIndex": 0,
     "groupIndex": 0,
-    "_id": "d1TM+kBZBAupdpKGKoqY+C"
+    "_id": "79EMUwbrBPHpjpKfJIZvSe"
   },
   {
     "__type__": "cc.TiledLayer",
@@ -526,7 +526,7 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_id": "e49yNUpq5FFYcSXY1+x2c+"
+    "_id": "659Aoh+6hJbpWIC0aQuPOK"
   },
   {
     "__type__": "cc.TiledMap",
@@ -557,6 +557,9 @@
     },
     "bombEffectAtlas": {
       "__uuid__": "8757afb3-ffb7-4621-befb-dcdecddf4f39"
+    },
+    "gameElementAtlas": {
+      "__uuid__": "9b2be356-a84c-4239-b882-ecc8e73a56ca"
     },
     "enemy": {
       "__uuid__": "7626908b-3bd5-495b-9638-69ae37b821ef"
