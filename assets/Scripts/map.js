@@ -80,7 +80,7 @@ cc.Class({
                 if(!this.HaveBlock(new cc.Vec2(x, y)) && Math.random() > 0.7){
                     let wall = new cc.Node();
                     wall.addComponent(cc.Sprite).spriteFrame = this.gameElementAtlas.getSpriteFrame('wall');
-                    wall.addComponent(ElementController).InitElement(ElementType.WALL);
+                    wall.addComponent(ElementController).InitElement(ElementType.WALL, new cc.Vec2(x, y), this._stone_map);
                     wall.parent = this.node;
                     wall.anchorX = 0;
                     wall.anchorY = 0;
@@ -311,6 +311,7 @@ cc.Class({
             this.role.position = this._floor_layer.getPositionAt(pos);
             this.role._tile_pos = pos;
         }
-    }
+    },
+
     // update (dt) {},
 });
