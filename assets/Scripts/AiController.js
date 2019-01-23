@@ -167,7 +167,10 @@ cc.Class({
      * @param {cc.Vec2} pos 
      */
     HaveBlock(pos) {
-        if (this._block_layer.getTileGIDAt(pos)) {
+        if (this._block_layer.getTileGIDAt(pos) != 0) {
+            return true;
+        }
+        if (this._wall_layer[pos.y][pos.x]){
             return true;
         }
         return false;

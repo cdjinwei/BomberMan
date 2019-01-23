@@ -24,6 +24,10 @@ window.RoleType = {
     ENEMY: 1
 }
 
+window.ElementType = {
+    WALL: 0
+}
+
 window.EventType = {
     EVENT_CLEAR_FIRE: 0,
     EVENT_ADD_FIRE: 1

@@ -8,7 +8,7 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 import BombEffect from "../Scripts/BombEffect";
-
+import ElementController from "../Scripts/ElementController";
 cc.Class({
     extends: cc.Component,
 
@@ -31,10 +31,8 @@ cc.Class({
         this._block_layer = this._tile_map.getLayer('block');
         this._role_list = [];
         this.registerEvent();
-        setTimeout(()=>{
-            this.InitStoneWall();
-        }, 1000)
         
+        this.InitStoneWall();
         this.InitialFireMap();
         this.AddRole(
             { isSelf: true },
@@ -48,7 +46,7 @@ cc.Class({
                     position: new cc.Vec2(3, 3)
                 },
                 {
-                    wall_layer: null,
+                    wall_layer: this._stone_map,
                     block_layer: this._block_layer,
                     floor_layer: this._floor_layer,
                     fire_map: this._fire_map
@@ -79,9 +77,10 @@ cc.Class({
         for(let y = 0; y < mapSize.height; y++){
             this._stone_map[y] = [];
             for(let x = 0; x < mapSize.width; x++){
-                if(!this.HaveBlock(new cc.Vec2(x, y)) && Math.random() > 0.5){
+                if(!this.HaveBlock(new cc.Vec2(x, y)) && Math.random() > 0.7){
                     let wall = new cc.Node();
                     wall.addComponent(cc.Sprite).spriteFrame = this.gameElementAtlas.getSpriteFrame('wall');
+                    wall.addComponent(ElementController).InitElement(ElementType.WALL);
                     wall.parent = this.node;
                     wall.anchorX = 0;
                     wall.anchorY = 0;
@@ -223,9 +222,13 @@ cc.Class({
                 left_count -= dir * dir;
                 start_pos.x += dir;
                 if (start_pos.x >= 0 && start_pos.x < map_size.width) {
-                    if (false) {
+                    if (this._stone_map[start_pos.y][start_pos.x]) {
                         //如果有砖块，加入这个坐标，然后停止这个while循环
-                        pos_map.push(cc.v2(start_pos.x, start_pos.y));
+                        pos_map.push({
+                            position: cc.v2(start_pos.x, start_pos.y),
+                            type: dir == 1 ? BoomEffectType.HOR_RIGHT_1 : BoomEffectType.HOR_LEFT_1,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
+                        });
                         break;
                     }
                     if (this.HaveBlock(start_pos)) {
@@ -256,9 +259,13 @@ cc.Class({
                 left_count -= dir * dir;
                 start_pos.y += dir;
                 if (start_pos.y >= 0 && start_pos.y < map_size.height) {
-                    if (false) {
+                    if (this._stone_map[start_pos.y][start_pos.x]) {
                         //如果有砖块，加入这个坐标，然后停止这个while循环
-                        pos_map.push(cc.v2(start_pos.x, start_pos.y));
+                        pos_map.push({
+                            position: cc.v2(start_pos.x, start_pos.y),
+                            type: dir == 1 ? BoomEffectType.VER_BOTTOM_1 : BoomEffectType.VER_TOP_1,
+                            pixPos: this._floor_layer.getPositionAt(cc.v2(start_pos.x, start_pos.y))
+                        });
                         break;
                     }
                     if (this.HaveBlock(start_pos)) {
@@ -289,6 +296,9 @@ cc.Class({
     HaveBlock(pos) {
         console.log(pos);
         if (this._block_layer.getTileGIDAt(pos)) {
+            return true;
+        }
+        if(this._stone_map[pos.y][pos.x]){
             return true;
         }
         return false;

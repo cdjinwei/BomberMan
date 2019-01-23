@@ -64,6 +64,7 @@ cc.Class({
     },
 
     CreateFire(info){
+        console.log(info);
         let node = new cc.Node();
         node.addComponent(cc.Sprite).spriteFrame = this._sprite_sheet.getSpriteFrame(`${info.type}1`);
         node._fire_type = info.type;
