@@ -294,7 +294,6 @@ cc.Class({
     },
 
     HaveBlock(pos) {
-        console.log(pos);
         if (this._block_layer.getTileGIDAt(pos)) {
             return true;
         }

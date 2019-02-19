@@ -15,7 +15,7 @@
   "includeAnySDK": false,
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
-  "inlineSpriteFrames_native": true,
+  "inlineSpriteFrames_native": false,
   "jailbreakPlatform": false,
   "md5Cache": false,
   "mergeStartScene": false,
@@ -33,7 +33,7 @@
     "REMOTE_SERVER_ROOT": "",
     "orientation": "portrait"
   },
-  "startScene": "7c0b32f4-aeb3-4f9c-82f9-1959a4e7f375",
+  "startScene": "93b6c6bc-36e2-4a27-b599-795ee8de3764",
   "title": "BombMan",
   "webOrientation": "auto",
   "wechatgame": {
